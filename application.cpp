@@ -1,14 +1,10 @@
 /*
-CSX75 Tutorial 3
-
-A program which opens a window and draws the "color cube."
-
-Use the arrow keys and PgUp,PgDn,
-keys to make the cube move.
+CS775: Legolization Project
 
 Modified from An Introduction to OpenGL Programming,
 Ed Angel and Dave Shreiner, SIGGRAPH 2013
 
+Modified from Tutorial 3
 Written by Parag Chaudhuri, 2015
 */
 
