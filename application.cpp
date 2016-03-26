@@ -83,9 +83,6 @@ void renderGL(void) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // evaluate centroid of points
-    evaluate_centroid();
-
     rotation_matrix = glm::rotate(glm::mat4(1.0f), xrot, glm::vec3(1.0f, 0.0f, 0.0f));
     rotation_matrix = glm::rotate(rotation_matrix, yrot, glm::vec3(0.0f, 1.0f, 0.0f));
     rotation_matrix = glm::rotate(rotation_matrix, zrot, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -143,9 +140,6 @@ int main(int argc, char **argv) {
     std::cout << "Renderer: " << glGetString(GL_RENDERER) << std::endl;
     std::cout << "Version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-
-    std::cout << std::endl << "Starting Modelling Application" << std::endl;
-    std::cout << "--Modelling Mode--" << std::endl;
 
     //Keyboard Callback
     glfwSetMouseButtonCallback(window, csX75::mouse_callback);
