@@ -6,46 +6,49 @@
 
 using namespace std;
 
-bool LegoBlock::has_valid_size(int x, int y) {
-    int smaller = min(x, y);
-    int larger = max(x, y);
+bool LegoBlock::has_valid_size(short x, short y) {
+    short smaller = min(x, y);
+    short larger = max(x, y);
 
     return (smaller == 1 && (larger == 1 || larger == 2 || larger == 3 || larger == 4 || larger == 6 || larger == 8))
            || (smaller == 2 && (larger == 2 || larger == 3 || larger == 4 || larger == 6 || larger == 8));
 }
 
-LegoBlock::LegoBlock() { }
+LegoBlock::LegoBlock() {
+    ignore_color = false;
+}
 
 void LegoBlock::set_ignore_color() {
     ignore_color = true;
 }
 
-void LegoBlock::set_color(int r, int g, int b) {
+void LegoBlock::set_color(short r, short g, short b) {
     this->r = r;
     this->g = g;
     this->b = b;
     ignore_color = false;
 }
 
-void LegoBlock::set_size(int x, int y) {
+void LegoBlock::set_size(short x, short y) {
     this->sx = x;
     this->sy = y;
 }
 
-void LegoBlock::set_location(int x, int y, int z) {
+void LegoBlock::set_location(short x, short y, short z) {
     this->x = x;
     this->y = y;
     this->z = z;
 }
 
-LegoBlock::LegoBlock(int, x, int y, int z, int sx, int sy) {
+LegoBlock::LegoBlock(short x, short y, short z, short sx, short sy) {
     set_location(x, y, z);
     set_size(sx, sy);
     set_ignore_color();
 }
 
-LegoBlock::LegoBlock(int, x, int y, int z, int sx, int sy, int r, int g, int b) {
+LegoBlock::LegoBlock(short x, short y, short z, short sx, short sy, short r, short g, short b) {
     set_location(x, y, z);
     set_size(sx, sy);
     set_color(r, g, b);
+    ignore_color = false;
 }

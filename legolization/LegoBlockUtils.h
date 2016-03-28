@@ -6,12 +6,14 @@
 #define GRAPHICSPROJECT_LEGOBLOCKSET_H
 
 #include <algorithm>
+#include <cassert>
+#include "LegoBlock.h"
 
 class LegoBlockUtils {
 public:
 
     // Merge Blocks
-    static LegoBlock merge(LegoBlock *block_1, LegoBlock *block_2);
+    static LegoBlock* merge(LegoBlock *block_1, LegoBlock *block_2);
 
     // Checks if 2 Lego blocks are connected
     static bool are_connected(LegoBlock *block_1, LegoBlock *block_2);
@@ -26,7 +28,7 @@ public:
     static bool can_colors_merge(LegoBlock *block_1, LegoBlock *block_2);
 
     // Returns which block's color should be considered. 0 if ignore
-    static int get_merge_color(LegoBlock *block_1, LegoBlock *block_2);
+    static short get_merge_color(LegoBlock *block_1, LegoBlock *block_2);
 
 };
 

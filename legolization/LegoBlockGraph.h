@@ -9,6 +9,9 @@
 #include "LegoBlockUtils.h"
 #include <list>
 #include <unordered_map>
+#include <iostream>
+
+using namespace std;
 
 class LegoBlockGraph {
 
@@ -17,10 +20,9 @@ public:
     list<LegoBlock *> blocks;
 
     // Map of blocks to connected
-    unordered_map<LegoBlock *, list < LegoBlock * > >
-    graph;
+    unordered_map<LegoBlock *, list < LegoBlock * > > graph;
 
-    unordered_map<int, list<LegoBlock *> > levels;
+    unordered_map<short, list<LegoBlock *> > levels;
 
     // Constructors
     LegoBlockGraph();
@@ -33,6 +35,9 @@ public:
 
     // Get list of connected blocks to a block
     list<LegoBlock *> get_connected_blocks(LegoBlock *block);
+
+    // Get blocks
+    void add_blocks(short ***r, short ***g, short ***b, short sx, short sy, short sz);
 };
 
 #endif //GRAPHICSPROJECT_LEGOBLOCKGRAPH_H

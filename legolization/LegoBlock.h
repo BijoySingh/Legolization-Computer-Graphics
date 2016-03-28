@@ -6,40 +6,41 @@
 #define GRAPHICSPROJECT_LEGOBLOCK_H
 
 #include <algorithm>
+#include <cassert>
 
 class LegoBlock {
 public:
     // Positions or least x, y, z corner
-    int x, y, z;
+    short x, y, z;
 
     // Size in x and y
-    int sx, sy;
+    short sx, sy;
 
     // color
-    int r, g, b;
+    short r, g, b;
 
     // color is ignorable
-    bool ignore_color = false;
+    bool ignore_color;
 
     // Constructors
     LegoBlock();
-    LegoBlock(int, x, int y, int z, int sx, int sy);
-    LegoBlock(int, x, int y, int z, int sx, int sy, int r, int g, int b);
+    LegoBlock(short x, short y, short z, short sx, short sy);
+    LegoBlock(short x, short y, short z, short sx, short sy, short r, short g, short b);
 
     // sets the ignore color to true
     void set_ignore_color();
 
     // sets the color of the block
-    void set_color(int r, int g, int b);
+    void set_color(short r, short g, short b);
 
     // sets the size of the block
-    void set_size(int x, int y);
+    void set_size(short x, short y);
 
     // sets the coordinate of the block
-    void set_location(int x, int y, int z);
+    void set_location(short x, short y, short z);
 
     // Checks if the size configuration is valid
-    static bool has_valid_size(int x, int y);
+    static bool has_valid_size(short x, short y);
 
 
 };

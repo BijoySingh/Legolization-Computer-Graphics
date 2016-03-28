@@ -34,7 +34,7 @@ bool LegoBlockUtils::is_stacked_on(LegoBlock *b1, LegoBlock *b2) {
     return stacked_z && overlapping_x && overlapping_y;
 }
 
-int LegoBlockUtils::get_merge_color(LegoBlock *b1, LegoBlock *b2) {
+short LegoBlockUtils::get_merge_color(LegoBlock *b1, LegoBlock *b2) {
     assert(can_colors_merge(b1, b2));
 
     if (b1->ignore_color && b2->ignore_color)
@@ -44,7 +44,7 @@ int LegoBlockUtils::get_merge_color(LegoBlock *b1, LegoBlock *b2) {
     return 1;
 }
 
-LegoBlock *LegoBlockUtils::merge(LegoBlock *b1, LegoBlock *b2) {
+LegoBlock* LegoBlockUtils::merge(LegoBlock *b1, LegoBlock *b2) {
     assert(can_merge(b1, b2));
 
     LegoBlock *b;
@@ -61,11 +61,11 @@ LegoBlock *LegoBlockUtils::merge(LegoBlock *b1, LegoBlock *b2) {
 
     assert(b != NULL);
 
-    int merge_color = get_merge_color(b1, b2);
+    short merge_color = get_merge_color(b1, b2);
     if (merge_color == 1) {
         b->set_color(b1->r, b1->g, b1->b);
     } else if (merge_color == 2) {
-        b->set_color(b12 > r, b2->g, b2->b);
+        b->set_color(b2->r, b2->g, b2->b);
     }
 
     return b;
