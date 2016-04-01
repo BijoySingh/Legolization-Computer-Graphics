@@ -7,6 +7,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <iostream>
+
+using namespace std;
 
 class LegoBlock {
 public:
@@ -14,7 +17,7 @@ public:
     short x, y, z;
 
     // Size in x and y
-    short sx, sy;
+    short sx, sy, sz;
 
     // color
     short r, g, b;
@@ -42,7 +45,7 @@ public:
     // Checks if the size configuration is valid
     static bool has_valid_size(short x, short y);
 
-
+    void getTriangles(float *points);
 };
 
 #endif //GRAPHICSPROJECT_LEGOBLOCK_H

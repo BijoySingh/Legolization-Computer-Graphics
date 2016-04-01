@@ -8,12 +8,19 @@
 bool LegoBlockUtils::can_merge(LegoBlock *b1, LegoBlock *b2) {
     return (can_colors_merge(b1, b2)
             && b1->z == b2->z
-            && (b1->x == b2->x && b1->sx == b2->sx && LegoBlock::has_valid_size(b1->x, b1->y + b2->y))
-            && (b1->y == b2->y && b1->sy == b2->sy && LegoBlock::has_valid_size(b1->x + b2->x, b1->y)));
+            && ((b1->x == b2->x
+                 && b1->sx == b2->sx
+                 && (b1->y + b1->sy == b2->y || b1->y == b2->y + b2->sy)
+                 && LegoBlock::has_valid_size(b1->sx, b1->sy + b2->sy))
+            || (b1->y == b2->y
+                && b1->sy == b2->sy
+                && (b1->x + b1->sx == b2->x || b1->x == b2->x + b2->sx)
+                && LegoBlock::has_valid_size(b1->sx + b2->sx, b1->sy)))
+            && (!(b1->x == b2->x && b1->y == b2->y && b1->z == b2->z)));
 }
 
 bool LegoBlockUtils::can_colors_merge(LegoBlock *b1, LegoBlock *b2) {
-    return (b1->ignore_color
+    return (true || b1->ignore_color
             || b2->ignore_color
             || (b1->r == b2->r && b1->g == b2->g && b1->b == b2->b));
 }
@@ -46,7 +53,6 @@ short LegoBlockUtils::get_merge_color(LegoBlock *b1, LegoBlock *b2) {
 
 LegoBlock* LegoBlockUtils::merge(LegoBlock *b1, LegoBlock *b2) {
     assert(can_merge(b1, b2));
-
     LegoBlock *b;
 
     if (b1->x == b2->x) {

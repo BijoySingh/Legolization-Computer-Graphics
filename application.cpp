@@ -25,7 +25,7 @@ void initShaders(void) {
     std::string vertex_shader_file("vshader.glsl");
     std::string fragment_shader_file("fshader.glsl");
 
-    std::vector<GLuint> shaderList;
+    std::vector <GLuint> shaderList;
     shaderList.push_back(csX75::LoadShaderGL(GL_VERTEX_SHADER, vertex_shader_file));
     shaderList.push_back(csX75::LoadShaderGL(GL_FRAGMENT_SHADER, fragment_shader_file));
 
@@ -84,6 +84,8 @@ void renderGL(void) {
     rotation_matrix = glm::rotate(rotation_matrix, zrot, glm::vec3(0.0f, 0.0f, 1.0f));
 
     ortho_matrix = glm::ortho(-1 * view_x, view_x, -1 * view_y, view_y, -1 * view_z, view_z);
+    translation_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(xpos, ypos, zpos));
+
     modelview_matrix = ortho_matrix *
                        translation_matrix *
                        rotation_matrix;
@@ -93,7 +95,40 @@ void renderGL(void) {
     glDrawArrays(GL_TRIANGLES, 0, num_vertices);
 }
 
+void readBlocks() {
+    ifstream fin;
+    fin.open("legolization/pixels.txt");
+
+    short number_of_cells;
+    fin >> number_of_cells;
+    number_of_cells = number_of_cells * 108 > MAX_VERTICES ? (int) MAX_VERTICES / 108 : number_of_cells;
+
+    short x, y, z;
+    short sx, sy;
+    short r, g, b;
+    float points[108];
+
+    for (int i = 0; i < number_of_cells; i++) {
+        fin >> x >> y >> z >> sx >> sy >> r >> g >> b;
+        LegoBlock block(x, y, z, sx, sy, r, g, b);
+        block.getTriangles(points);
+
+        for (int j = 0; j < 108; j += 3) {
+            v_positions[num_vertices] = glm::vec4(points[j], points[j + 1], points[j + 2], 1);
+            v_colors[num_vertices] = glm::vec4(r / 255.0, g / 255.0, b / 255.0, 1);
+            num_vertices += 1;
+        }
+    }
+
+    fin.close();
+}
+
 int main(int argc, char **argv) {
+
+    readBlocks();
+
+    cout<<"READ BLOCK"<<endl;
+
     //! The pointer to the GLFW window
     GLFWwindow *window;
 

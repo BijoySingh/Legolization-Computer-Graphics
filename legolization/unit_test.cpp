@@ -51,24 +51,25 @@ short ***getImageMatrix(short sx, short sy, short sz) {
 
 
 int main() {
-    short size = 40;
-    short sx = size, sy = size, sz = size, max_value = 4;
+    short size = 20;
+    short sx = size, sy = size, sz = size, max_value = 255;
     short ***r = getImageMatrix(sx, sy, sz);
     short ***g = getImageMatrix(sx, sy, sz);
 
-    setToSphere(r, sx, sy, sz, max_value, 16);
+    setToSphere(r, sx, sy, sz, max_value, 8);
     setValue(g, sx, sy, sz, 0);
 
     LegoBlockGraph graph;
     graph.add_blocks(r, g, g, sx, sy, sz);
+    graph.merge_to_maximal();
 
-    /*
     ofstream fout;
-    fout.open("triangles.txt");
-    fout << triangles.size() << endl;
-    for (Triangle triangle : triangles) {
-        triangle.print(fout);
-    }
+    fout.open("pixels.txt");
+    graph.render_blocks(fout);
     fout.close();
-     */
+
+    fout.open("../renderman/pixels.rib");
+    graph.prman_render_blocks(fout);
+    fout.close();
+
 }

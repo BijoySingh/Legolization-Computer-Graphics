@@ -8,8 +8,8 @@ LDFLAGS=-L/usr/local/lib
 CPPFLAGS=-I/usr/local/include -I./
 
 BIN=application.out
-SRCS=application.cpp gl_framework.cpp shader_util.cpp
-INCLUDES=gl_framework.hpp shader_util.hpp application.hpp
+SRCS=application.cpp gl_framework.cpp shader_util.cpp legolization/LegoBlock.cpp
+INCLUDES=legolization/LegoBlock.h gl_framework.hpp shader_util.hpp application.hpp
 
 all: $(BIN)
 
@@ -18,3 +18,9 @@ $(BIN): $(SRCS) $(INCLUDES)
 
 clean:
 	rm -f *~ *.o $(BIN)
+
+lego:
+	cd legolization; make; ./legolization.out
+
+prman:
+	cd renderman; make;

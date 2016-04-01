@@ -1,0 +1,33 @@
+TransformBegin
+Translate 0.0 0.0 0.5
+ReadArchive "unitplane.rib"
+TransformEnd
+
+TransformBegin
+Translate 0.0 0.0 -0.5
+ReadArchive "unitplane.rib"
+TransformEnd
+
+TransformBegin
+Rotate 90 0 1 0
+Translate 0.0 0.0 0.5
+ReadArchive "unitplane.rib"
+TransformEnd
+
+TransformBegin
+Rotate 90 0 1 0
+Translate 0.0 0.0 -0.5
+ReadArchive "unitplane.rib"
+TransformEnd
+
+TransformBegin
+Rotate 90 1 0 0
+Translate 0.0 0.0 0.5
+ReadArchive "unitplane.rib"
+TransformEnd
+
+TransformBegin
+Rotate 90 1 0 0
+Translate 0.0 0.0 -0.5
+ReadArchive "unitplane.rib"
+TransformEnd

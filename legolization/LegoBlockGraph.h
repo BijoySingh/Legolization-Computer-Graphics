@@ -10,6 +10,11 @@
 #include <list>
 #include <unordered_map>
 #include <iostream>
+#include <fstream>
+#include <utility>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
@@ -20,7 +25,8 @@ public:
     list<LegoBlock *> blocks;
 
     // Map of blocks to connected
-    unordered_map<LegoBlock *, list < LegoBlock * > > graph;
+    unordered_map<LegoBlock *, list < LegoBlock * > >
+    graph;
 
     unordered_map<short, list<LegoBlock *> > levels;
 
@@ -38,6 +44,19 @@ public:
 
     // Get blocks
     void add_blocks(short ***r, short ***g, short ***b, short sx, short sy, short sz);
+
+    // Generates a list of mergable pairs
+    list <pair<LegoBlock *, LegoBlock *> > generate_mergables();
+
+    // Merges the blocks randomly till maximal
+    void merge_to_maximal();
+
+    // Render the blocks
+    void render_blocks(ostream &out);
+
+    // Render the blocks
+    void prman_render_blocks(ostream &out, bool use_real_colors = true);
+
 };
 
 #endif //GRAPHICSPROJECT_LEGOBLOCKGRAPH_H
