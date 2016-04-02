@@ -17,7 +17,7 @@
 #include <ctime>
 #include <set>
 #define F_MAX 50
-#define K_N 5
+#define K_N 3
 
 using namespace std;
 
@@ -61,7 +61,7 @@ public:
     void render_blocks(ostream &out);
 
     // Render the blocks
-    void prman_render_blocks(ostream &out, bool use_real_colors = true);
+    void prman_render_blocks(ostream &out, short filter_z = -1,  bool use_real_colors = true);
 
     void generate_single_component_analysis();
 
@@ -70,7 +70,7 @@ public:
     list<LegoBlock *> get_neighbours(LegoBlock *block);
     set<LegoBlock *> get_neighbours(LegoBlock *block, int k);
 
-    LegoBlockGraph replicate(LegoBlock* reference, LegoBlock* duplicate);
+    void replicate(LegoBlock* reference, LegoBlock* &duplicate, LegoBlockGraph &lego_graph);
 
     void copy(LegoBlockGraph &graph);
     void remove_everything();

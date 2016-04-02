@@ -1,0 +1,13 @@
+Projection "perspective" "fov" 45 
+Display "renders/FILE.tif" "tiff" "rgba"
+Format 480 480 1
+
+FrameBegin 1
+Translate 0 0 60
+
+WorldBegin
+    AttributeBegin
+        ReadArchive "layer.rib"
+    AttributeEnd
+WorldEnd
+FrameEnd

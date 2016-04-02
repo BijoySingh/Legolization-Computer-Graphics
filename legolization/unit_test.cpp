@@ -2,6 +2,7 @@
 // Created by Bijoy Kochar on 3/26/16.
 //
 
+#include <cstdio>
 #include "LegoBlock.h"
 #include "LegoBlockUtils.h"
 #include "LegoBlockGraph.h"
@@ -52,17 +53,18 @@ short ***getImageMatrix(short sx, short sy, short sz) {
 
 int main() {
     short size = 5;
-    short sx = size, sy = size, sz = 1, max_value = 255;
+    short sx = size, sy = size, sz = 3, max_value = 255;
     short ***r = getImageMatrix(sx, sy, sz);
     short ***g = getImageMatrix(sx, sy, sz);
 
-    setToSphere(r, sx, sy, sz, max_value, 8);
+    // setToSphere(r, sx, sy, sz, max_value, 8);
+    setValue(r, sx, sy, sz, 255);
     setValue(g, sx, sy, sz, 0);
 
     LegoBlockGraph graph;
     graph.add_blocks(r, g, g, sx, sy, sz);
     graph.merge_to_maximal();
-    // graph.generate_single_component_analysis();
+    graph.generate_single_component_analysis();
 
     ofstream fout;
     fout.open("pixels.txt");
@@ -73,4 +75,15 @@ int main() {
     graph.prman_render_blocks(fout);
     fout.close();
 
+    for (int i = 0; i < sz; i++) {
+        fout.open("../renderman/layer.rib");
+        graph.prman_render_blocks(fout, i);
+        string cmd = "cd ../renderman; make layer NUM=" + to_string(i) + " ";
+        const char *cmd_car = cmd.c_str();
+        cout << cmd << endl;
+        system(cmd_car);
+        fout.close();
+    }
+
+    system("cd ../renderman; make");
 }
