@@ -19,6 +19,21 @@ bool LegoBlockUtils::can_merge(LegoBlock *b1, LegoBlock *b2) {
             && (!(b1->x == b2->x && b1->y == b2->y && b1->z == b2->z)));
 }
 
+bool LegoBlockUtils::are_adjacent(LegoBlock *b1, LegoBlock *b2) {
+
+    bool overlapping_x = b1->x == b2->x
+                         || (b1->x < b2->x && b1->x + b1->sx > b2->x)
+                         || (b1->x > b2->x && b1->x < b2->x + b2->sx);
+
+    bool overlapping_y = b1->y == b2->y
+                         || (b1->y < b2->y && b1->y + b1->sy > b2->y)
+                         || (b1->y > b2->y && b1->y < b2->y + b2->sy);
+
+    return b1->z == b2->z
+              && ((overlapping_x && (b1->y + b1->sy == b2->y || b1->y == b2->y + b2->sy))
+                  || (overlapping_y && (b1->x + b1->sx == b2->x || b1->x == b2->x + b2->sx)));
+}
+
 bool LegoBlockUtils::can_colors_merge(LegoBlock *b1, LegoBlock *b2) {
     return (true || b1->ignore_color
             || b2->ignore_color

@@ -18,6 +18,9 @@ public:
     // Checks if 2 Lego blocks are connected
     static bool are_connected(LegoBlock *block_1, LegoBlock *block_2);
 
+    // Checks if the are adjacent
+    static bool are_adjacent(LegoBlock *block_1, LegoBlock *block_2);
+
     // Checks if block 2 is stacked over block 1
     static bool is_stacked_on(LegoBlock *block_1, LegoBlock *block_2);
 

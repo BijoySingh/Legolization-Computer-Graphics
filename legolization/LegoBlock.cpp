@@ -198,3 +198,14 @@ void LegoBlock::getTriangles(float *points) {
     points[position + 7] = y + sy;
     points[position + 8] = z + sz;
 }
+
+list<LegoBlock *> LegoBlock::split() {
+    list<LegoBlock*> children;
+    for (int i = 0; i < sx; i++) {
+        for (int j = 0; j < sy; j++) {
+            LegoBlock* block = new LegoBlock(x + i, y +  j, z, sx, sy, r, g, b);
+            children.push_back(block);
+        }
+    }
+    return children;
+}

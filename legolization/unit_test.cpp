@@ -51,8 +51,8 @@ short ***getImageMatrix(short sx, short sy, short sz) {
 
 
 int main() {
-    short size = 20;
-    short sx = size, sy = size, sz = size, max_value = 255;
+    short size = 5;
+    short sx = size, sy = size, sz = 1, max_value = 255;
     short ***r = getImageMatrix(sx, sy, sz);
     short ***g = getImageMatrix(sx, sy, sz);
 
@@ -62,6 +62,7 @@ int main() {
     LegoBlockGraph graph;
     graph.add_blocks(r, g, g, sx, sy, sz);
     graph.merge_to_maximal();
+    // graph.generate_single_component_analysis();
 
     ofstream fout;
     fout.open("pixels.txt");

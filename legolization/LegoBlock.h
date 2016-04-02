@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <list>
 
 using namespace std;
 
@@ -24,6 +25,8 @@ public:
 
     // color is ignorable
     bool ignore_color;
+
+    short w;
 
     // Constructors
     LegoBlock();
@@ -46,6 +49,8 @@ public:
     static bool has_valid_size(short x, short y);
 
     void getTriangles(float *points);
+
+    list<LegoBlock*> split();
 };
 
 #endif //GRAPHICSPROJECT_LEGOBLOCK_H

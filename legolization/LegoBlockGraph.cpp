@@ -6,6 +6,14 @@
 
 LegoBlockGraph::LegoBlockGraph() { }
 
+list<LegoBlock *> LegoBlockGraph::get_neighbours(LegoBlock *block) {
+    list < LegoBlock * > neighbours;
+    neighbours.splice(neighbours.end(), graph[block]);
+    neighbours.splice(neighbours.end(), reverse_graph[block]);
+    neighbours.splice(neighbours.end(), horizontal_neighbours[block]);
+    return neighbours;
+}
+
 list<LegoBlock *> filter_connected(list < LegoBlock * > blocks, LegoBlock * reference) {
     list < LegoBlock * > filtered;
     for (auto block : blocks) {
@@ -16,6 +24,16 @@ list<LegoBlock *> filter_connected(list < LegoBlock * > blocks, LegoBlock * refe
     return filtered;
 }
 
+list<LegoBlock *> get_horizontal_neighbours(list < LegoBlock * > blocks, LegoBlock * reference) {
+    list < LegoBlock * > neighbours;
+    for (auto block: blocks) {
+        if (LegoBlockUtils::are_adjacent(block, reference)) {
+            neighbours.push_back(block);
+        }
+    }
+    return neighbours;
+}
+
 void LegoBlockGraph::add_block(LegoBlock *block) {
     blocks.push_back(block);
 
@@ -23,30 +41,35 @@ void LegoBlockGraph::add_block(LegoBlock *block) {
     levels[block->z].push_back(block);
 
     // Add in graph
-    graph[block] = get_connected_blocks(block);
-    for (auto neighbour: graph[block]) {
-        graph[neighbour].push_back(block);
+    graph[block] = filter_connected(levels[block->z + 1], block);
+    reverse_graph[block] = filter_connected(levels[block->z - 1], block);
+    horizontal_neighbours[block] = get_horizontal_neighbours(blocks, block);
+    for (auto neighbour : horizontal_neighbours[block]) {
+        horizontal_neighbours[neighbour].push_back(block);
     }
-
 }
 
 void LegoBlockGraph::remove_block(LegoBlock *block) {
     blocks.remove(block);
     levels[block->z].remove(block);
-    for (auto neighbour: graph[block]) {
-        graph[neighbour].remove(block);
+    for (auto child: graph[block]) {
+        reverse_graph[child].remove(block);
+    }
+    for (auto parent: reverse_graph[block]) {
+        graph[parent].remove(block);
+    }
+    for (auto neighbour : horizontal_neighbours[block]) {
+        horizontal_neighbours[neighbour].remove(block);
     }
     graph.erase(block);
-}
-
-list<LegoBlock *> LegoBlockGraph::get_connected_blocks(LegoBlock *block) {
-    list < LegoBlock * > connected;
-    connected.splice(connected.end(), filter_connected(levels[block->z + 1], block));
-    connected.splice(connected.end(), filter_connected(levels[block->z - 1], block));
-    return connected;
+    reverse_graph.erase(block);
+    horizontal_neighbours.erase(block);
 }
 
 void LegoBlockGraph::add_blocks(short ***r, short ***g, short ***b, short sx, short sy, short sz) {
+    this->r = r; this->g = g; this->b = b;
+    this->sx = sx; this->sy = sy; this->sz = sz;
+
     for (int i = 0; i < sx; i++) {
         for (int j = 0; j < sy; j++) {
             for (int k = 0; k < sz; k++) {
@@ -159,12 +182,12 @@ void LegoBlockGraph::prman_render_blocks(ostream &out, bool use_real_colors) {
         float points[108];
         block->getTriangles(points);
         for (int i = 0; i < 108; i++) {
-            if (i%9 == 0) {
+            if (i % 9 == 0) {
                 out << "    Polygon \"P\" [";
             }
             out << points[i] << " ";
-            if (i%9 == 8) {
-                out << "]" <<endl;
+            if (i % 9 == 8) {
+                out << "]" << endl;
             }
         }
         out << "AttributeEnd" << endl << endl;
@@ -172,10 +195,10 @@ void LegoBlockGraph::prman_render_blocks(ostream &out, bool use_real_colors) {
 }
 
 
-list <pair<LegoBlock *, LegoBlock *> > LegoBlockGraph::generate_mergables() {
-    list <pair<LegoBlock *, LegoBlock *> > mergables;
+list <pair<LegoBlock *, LegoBlock *>> LegoBlockGraph::generate_mergables() {
+    list <pair<LegoBlock *, LegoBlock *>> mergables;
     for (LegoBlock *block : blocks) {
-        for (LegoBlock *neighbour : levels[block->z]) {
+        for (LegoBlock *neighbour : horizontal_neighbours[block]) {
             if (LegoBlockUtils::can_merge(block, neighbour)) {
                 mergables.push_back(make_pair(block, neighbour));
             }
@@ -185,9 +208,10 @@ list <pair<LegoBlock *, LegoBlock *> > LegoBlockGraph::generate_mergables() {
     return mergables;
 }
 
-pair < LegoBlock * , LegoBlock *> get_iterator(list <pair<LegoBlock *, LegoBlock *> > &mergables, int position) {
+pair<LegoBlock *, LegoBlock *> get_iterator(list <pair<LegoBlock *, LegoBlock *>> &mergables, int position) {
     int index = 0;
-    list < pair < LegoBlock * , LegoBlock * > >::iterator value;
+    list < pair < LegoBlock * , LegoBlock * > > ::iterator
+    value;
     for (value = mergables.begin(); value != mergables.end(); value++) {
         if (index == position)
             return *value;
@@ -196,8 +220,9 @@ pair < LegoBlock * , LegoBlock *> get_iterator(list <pair<LegoBlock *, LegoBlock
     assert(false);
 }
 
-void remove_mergables(list <pair<LegoBlock *, LegoBlock *> > &mergables, LegoBlock *block) {
-    list < pair < LegoBlock * , LegoBlock * > >::iterator value;
+void remove_mergables(list <pair<LegoBlock *, LegoBlock *>> &mergables, LegoBlock *block) {
+    list < pair < LegoBlock * , LegoBlock * > > ::iterator
+    value;
 
     for (value = mergables.begin(); value != mergables.end(); value++) {
         if (value->first == block || value->second == block) {
@@ -208,12 +233,11 @@ void remove_mergables(list <pair<LegoBlock *, LegoBlock *> > &mergables, LegoBlo
 }
 
 void LegoBlockGraph::merge_to_maximal() {
-    list <pair<LegoBlock *, LegoBlock *> > mergables = generate_mergables();
-    cout << " Merge to Maximal " << mergables.size() << endl;
+    int start_size = blocks.size();
+    list <pair<LegoBlock *, LegoBlock *>> mergables = generate_mergables();
 
     while (mergables.size() != 0) {
         int position = rand() % mergables.size();
-        cout<<" Merging @ " << mergables.size() <<" "<< position <<endl;
 
         pair < LegoBlock * , LegoBlock * > iter = get_iterator(mergables, position);
         LegoBlock *block = LegoBlockUtils::merge(iter.first, iter.second);
@@ -228,11 +252,183 @@ void LegoBlockGraph::merge_to_maximal() {
 
         add_block(block);
 
-        for (LegoBlock *neighbour : levels[block->z]) {
+        for (LegoBlock *neighbour : horizontal_neighbours[block]) {
             if (LegoBlockUtils::can_merge(block, neighbour)) {
                 mergables.push_back(make_pair(block, neighbour));
                 mergables.push_back(make_pair(neighbour, block));
             }
         }
     }
+
+    cout << " Merged to Maximal from " << start_size << " to " <<  blocks.size() << endl;
+}
+
+LegoBlockGraph LegoBlockGraph::replicate(LegoBlock* reference, LegoBlock* duplicate) {
+    LegoBlockGraph lego_graph;
+    for (LegoBlock* block : blocks) {
+        LegoBlock *b = new LegoBlock(block->x, block->y, block->z, block->sx, block->sy, block->r, block->g, block->b);
+        lego_graph.add_block(b);
+
+        if (block == reference) {
+            duplicate = b;
+        }
+    }
+    return lego_graph;
+}
+
+void LegoBlockGraph::copy(LegoBlockGraph &graph) {
+    this->blocks = graph.blocks;
+    this->visited = graph.visited;
+    this->graph = graph.graph;
+    this->reverse_graph = graph.reverse_graph;
+    this->horizontal_neighbours = graph.horizontal_neighbours;
+    this->levels = graph.levels;
+}
+
+void LegoBlockGraph::remove_everything() {
+    graph.clear();
+    reverse_graph.clear();
+    levels.clear();
+    visited.clear();
+    horizontal_neighbours.clear();
+    for (LegoBlock* block : blocks) {
+        delete block;
+    }
+    blocks.clear();
+}
+
+void LegoBlockGraph::generate_single_component_analysis() {
+    pair<int, LegoBlock*> ca = component_analysis();
+    pair<int, LegoBlock*> t_ca;
+    int s = ca.first;
+    LegoBlock* w = ca.second;
+    set<LegoBlock*> neighbours;
+    list<LegoBlock*> replacements;
+
+    short f = 0;
+    while( s > 1 && f < F_MAX) {
+        cout << "Trying to Improve s from " << s << endl;
+
+        LegoBlock* duplicate;
+        LegoBlockGraph replicated = replicate(w, duplicate);
+        neighbours = replicated.get_neighbours(duplicate, K_N);
+        neighbours.insert(duplicate);
+
+        for (LegoBlock *neighbour: neighbours) {
+            replicated.remove_block(neighbour);
+            replacements.splice(replacements.end(), neighbour->split());
+        }
+
+        for (LegoBlock *replacement: replacements) {
+            replicated.add_block(replacement);
+        }
+
+        t_ca = replicated.component_analysis();
+        cout << " TCA Pre Calculated " << t_ca.first << endl;
+        replicated.merge_to_maximal();
+        t_ca = replicated.component_analysis();
+        cout << " TCA Post Calculated " << t_ca.first << endl;
+
+        if (t_ca.first < s) {
+            cout << "Improved the S from " << s << " to " << t_ca.first << endl;
+
+            s = t_ca.first;
+            w = t_ca.second;
+            f = 0;
+
+            remove_everything();
+            copy(replicated);
+        } else {
+            cout << " Failure " << f << ", could not get better than "<< s
+            << ". Was able to make it "<< t_ca.first << endl;
+            replicated.remove_everything();
+            f++;
+        }
+
+    }
+}
+
+set<LegoBlock*> LegoBlockGraph::get_neighbours(LegoBlock* block, int k) {
+    visited.clear();
+    for (LegoBlock *block : blocks) {
+        visited[block] = 0;
+    }
+
+    set<LegoBlock*> neighbours;
+    list<LegoBlock*> stack;
+    stack.push_back(block);
+    while (stack.size() > 0) {
+        LegoBlock* top = stack.front();
+        stack.pop_front();
+        if (visited[top] == 0) {
+            list<LegoBlock*> t_neighbours = get_neighbours(top);
+            for (auto child : t_neighbours) {
+                neighbours.insert(child);
+                stack.push_back(child);
+            }
+        }
+    }
+
+    return neighbours;
+}
+
+pair<int, LegoBlock*> LegoBlockGraph::component_analysis() {
+    visited.clear();
+    for (LegoBlock *block : blocks) {
+        visited[block] = -1;
+    }
+
+    int A = 0;
+    for (LegoBlock *bi : blocks) {
+        if (visited[bi] != -1) {
+            continue;
+        }
+
+        list < LegoBlock * > B;
+        B.push_back(bi);
+        while (B.size() > 0) {
+            LegoBlock *bj = B.front();
+            B.pop_front();
+            visited[bj] = A;
+
+            for (LegoBlock *bk : graph[bj]) {
+                if (visited[bk] == -1) {
+                    B.push_back(bk);
+                }
+            }
+
+            for (LegoBlock *bk : reverse_graph[bj]) {
+                if (visited[bk] == -1) {
+                    B.push_back(bk);
+                }
+            }
+        }
+
+        A++;
+    }
+
+    int sum = 0;
+    set<int> components;
+    list<LegoBlock*> neighbours;
+    for (LegoBlock* block : blocks) {
+        neighbours = get_neighbours(block);
+        components.clear();
+        components.insert(visited[block]);
+        for (LegoBlock* neighbour : neighbours) {
+            components.insert(visited[neighbour]);
+        }
+        block->w = components.size() - 1;
+        sum += components.size() - 1;
+    }
+
+    int position = rand() % sum;
+    int count = 0;
+    for (LegoBlock* block : blocks) {
+        count += block->w;
+        if (count > position) {
+            return make_pair(A, block);
+        }
+    }
+
+    assert(false);
 }
