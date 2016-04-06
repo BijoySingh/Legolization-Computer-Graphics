@@ -203,9 +203,15 @@ list<LegoBlock *> LegoBlock::split() {
     list<LegoBlock*> children;
     for (int i = 0; i < sx; i++) {
         for (int j = 0; j < sy; j++) {
-            LegoBlock* block = new LegoBlock(x + i, y +  j, z, sx, sy, r, g, b);
+            LegoBlock* block = new LegoBlock(x + i, y +  j, z, 1, 1, r, g, b);
             children.push_back(block);
         }
     }
     return children;
+}
+
+void LegoBlock::print() {
+    cout << x << " " << y << " " << z << endl;
+    cout << sx << " " << sy << " " << sz << endl;
+    cout << w << endl;
 }

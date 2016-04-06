@@ -51,6 +51,8 @@ public:
     void getTriangles(float *points);
 
     list<LegoBlock*> split();
+
+    void print();
 };
 
 #endif //GRAPHICSPROJECT_LEGOBLOCK_H

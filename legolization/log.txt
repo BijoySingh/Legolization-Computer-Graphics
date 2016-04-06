@@ -1,0 +1,40 @@
+ Merged to Maximal from 3379 to 1132
+ Merged to Maximal from 1221 to 1215
+ Failure 0, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 1, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 2, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 3, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 4, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 5, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 6, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 7, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 8, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 9, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 10, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 11, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 12, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 13, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 14, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 15, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 16, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 17, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215
+ Failure 18, could not get better than 129. Was able to make it 192
+ Merged to Maximal from 1221 to 1215

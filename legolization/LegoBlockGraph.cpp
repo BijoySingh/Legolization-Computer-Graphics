@@ -54,7 +54,7 @@ void LegoBlockGraph::add_block(LegoBlock *block) {
         horizontal_neighbours[neighbour].push_back(block);
     }
 
-    // cout << " Block added with " << horizontal_neighbours.size() << " horizontal neighbour, " << graph[block].size()
+    // cout << " Block added with " << horizontal_neighbours[block].size() << " horizontal neighbour, " << graph[block].size()
     // << " children, " << reverse_graph[block].size() << " parents " <<endl;
 }
 
@@ -182,16 +182,19 @@ void LegoBlockGraph::prman_render_blocks(ostream &out, short filter_z, bool use_
         short colors[3];
         if (use_real_colors) {
             getColor(block->sx, block->sy, colors);
+        } else if (block->ignore_color) {
+            colors[0] = 128;
+            colors[1] = 128;
+            colors[2] = 128;
         } else {
             colors[0] = block->r;
             colors[1] = block->g;
             colors[2] = block->b;
         }
-        out << "    Color [" << colors[0] / 255.0 << " " << colors[1] / 255.0 << " " << colors[2] / 255.0 << "]" <<
-        endl;
-        /*out << "    Scale " << block->sx << " " << block->sy << " " << block->sz << endl;
-        out << "    Translate -" << block->x << " -" << block->y << " -" << block->z << endl;
-        out << "    ReadArchive \"unitcube.rib\"" << endl;*/
+
+        out << "    Color [" << colors[0] / 255.0 << " "
+        << colors[1] / 255.0 << " " << colors[2] / 255.0 << "]" << endl;
+
         float points[108];
         block->getTriangles(points);
         for (int i = 0; i < 108; i++) {
@@ -249,6 +252,8 @@ void LegoBlockGraph::merge_to_maximal() {
     int start_size = blocks.size();
     list <pair<LegoBlock *, LegoBlock *>> mergables = generate_mergables();
 
+    // cout<<" Found "<<mergables.size() << " mergeables" << endl;
+
     while (mergables.size() != 0) {
         int position = rand() % mergables.size();
 
@@ -273,7 +278,7 @@ void LegoBlockGraph::merge_to_maximal() {
         }
     }
 
-    cout << " Merged to Maximal from " << start_size << " to " <<  blocks.size() << endl;
+    // cout << " Merged to Maximal from " << start_size << " to " <<  blocks.size() << endl;
 }
 
 void LegoBlockGraph::replicate(LegoBlock* reference, LegoBlock* &duplicate, LegoBlockGraph &lego_graph) {
@@ -316,18 +321,20 @@ void LegoBlockGraph::generate_single_component_analysis() {
     set<LegoBlock*> neighbours;
     list<LegoBlock*> replacements;
 
+    short same_f = 0;
     short f = 0;
-    while( s > 1 && f < F_MAX) {
+    while( s > 1 && f < F_MAX && same_f < F_MAX) {
         // cout << " Trying to Improve s from " << s << endl;
 
         LegoBlock* duplicate;
         LegoBlockGraph replicated;
         replicate(w, duplicate, replicated);
-        // cout << " Replicated Successfully " << endl;
+        // cout << " Replicated Successfully " << blocks.size() << " => "<< replicated.blocks.size() << endl;
 
         neighbours.clear();
         neighbours = replicated.get_neighbours(duplicate, K_N);
         neighbours.insert(duplicate);
+        replacements.clear();
         // cout << " Got the " << K_N << "-ring neighbourhood " << endl;
 
         for (LegoBlock *neighbour: neighbours) {
@@ -339,15 +346,15 @@ void LegoBlockGraph::generate_single_component_analysis() {
             delete neighbour;
         }
 
-        // cout << " Neighbours removed and Replacements created from the replicated graph " << endl;
+        // cout << " Neighbours removed and Replacements created from the replicated graph " << replacements.size() << endl;
 
         for (LegoBlock *replacement: replacements) {
             replicated.add_block(replacement);
+            // cout << " Replacement " << replacement->sx << " " << replacement->sy << " " << replicated.horizontal_neighbours[replacement].size() << endl;
         }
 
         // cout << " Replacements added to replicated graph " << endl;
 
-        t_ca = replicated.component_analysis();
         // cout << " TCA Pre Calculated " << t_ca.first << endl;
         replicated.merge_to_maximal();
 
@@ -355,6 +362,10 @@ void LegoBlockGraph::generate_single_component_analysis() {
         // cout << " TCA Post Calculated " << t_ca.first << endl;
 
         if (t_ca.first < s) {
+            //if (t_ca.first == s) {
+                //same_f++;
+            //}
+
             cout << "Improved the S from " << s << " to " << t_ca.first << endl;
 
             s = t_ca.first;
@@ -365,7 +376,7 @@ void LegoBlockGraph::generate_single_component_analysis() {
             copy(replicated);
         } else {
             cout << " Failure " << f << ", could not get better than "<< s
-            << ". Was able to make it "<< t_ca.first << endl;
+             << ". Was able to make it "<< t_ca.first << endl;
             replicated.remove_everything();
             f++;
         }
@@ -416,33 +427,34 @@ pair<int, LegoBlock*> LegoBlockGraph::component_analysis() {
             continue;
         }
 
-        list < LegoBlock * > B;
-        B.push_back(bi);
+        set < LegoBlock * > B;
+        B.insert(bi);
         while (B.size() > 0) {
-            LegoBlock *bj = B.front();
-            B.pop_front();
+            LegoBlock *bj = *B.begin();
+            B.erase(bj);
             visited[bj] = A;
 
             for (LegoBlock *bk : graph[bj]) {
                 if (visited[bk] == -1) {
-                    B.push_back(bk);
+                    B.insert(bk);
                 }
             }
 
             for (LegoBlock *bk : reverse_graph[bj]) {
                 if (visited[bk] == -1) {
-                    B.push_back(bk);
+                    B.insert(bk);
                 }
             }
         }
 
         A++;
     }
-    // cout << "All Blocks Visited with A " << A << endl;
+     // cout << "All Blocks Visited with A " << A << endl;
 
     int sum = 0;
     set<int> components;
     list<LegoBlock*> neighbours;
+    list<LegoBlock*> concerned;
     for (LegoBlock* block : blocks) {
         neighbours = get_neighbours(block);
 
@@ -453,6 +465,10 @@ pair<int, LegoBlock*> LegoBlockGraph::component_analysis() {
         }
         block->w = components.size() - 1;
         sum += components.size() - 1;
+
+        if (components.size() - 1 > 0) {
+            concerned.push_back(block);
+        }
         // cout << " Disparity Count " << block->x << " "
         // << block->y << " " << block->z << " " << components.size() << " " << neighbours.size() << endl;
     }
@@ -465,7 +481,7 @@ pair<int, LegoBlock*> LegoBlockGraph::component_analysis() {
 
     int position = rand() % sum;
     int count = 0;
-    for (LegoBlock* block : blocks) {
+    for (LegoBlock* block : concerned) {
         count += block->w;
         if (count > position) {
             return make_pair(A, block);

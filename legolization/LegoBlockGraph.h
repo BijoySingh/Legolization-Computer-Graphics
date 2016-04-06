@@ -16,8 +16,9 @@
 #include <cstdlib>
 #include <ctime>
 #include <set>
-#define F_MAX 50
-#define K_N 3
+
+#define F_MAX 100
+#define K_N 7
 
 using namespace std;
 
