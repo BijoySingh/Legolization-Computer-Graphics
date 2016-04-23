@@ -215,3 +215,10 @@ void LegoBlock::print() {
     cout << sx << " " << sy << " " << sz << endl;
     cout << w << endl;
 }
+
+void LegoBlock::print_info() {
+    cout << "LegoBlock:: "
+    << x << "," << y << "," << z << " position, "
+    << sx << "," << sy << "," << sz << " size " << endl;
+
+}

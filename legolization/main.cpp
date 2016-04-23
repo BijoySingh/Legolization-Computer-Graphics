@@ -44,7 +44,6 @@ void render_stuff(LegoBlockGraph &graph, short sz, bool print_layers = false,
 }
 
 short ***getImageMatrix(short sx, short sy, short sz) {
-    srand(time(NULL));
     short ***image = new short **[(int) sx];
     for (int i = 0; i < sx; i++) {
         image[i] = new short *[(int) sy];
@@ -111,6 +110,7 @@ int main() {
 
     graph.merge_to_maximal();
     graph.generate_single_component_analysis();
+    graph.generate_stable_component();
 
     render_stuff(graph, sz, false, true, false);
     assert(validate(graph));

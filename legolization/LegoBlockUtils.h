@@ -7,7 +7,10 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include "LegoBlock.h"
+
+using namespace std;
 
 class LegoBlockUtils {
 public:
@@ -23,6 +26,12 @@ public:
 
     // Checks if block 2 is stacked over block 1
     static bool is_stacked_on(LegoBlock *block_1, LegoBlock *block_2);
+
+    // Returns the number of knobs of 1 go inside 2
+    static int overlap(LegoBlock *block_1, LegoBlock *block_2);
+
+    // Returns the relative positions of knobs of 1 going inside 2
+    static list<pair<int, int> > overlaps(LegoBlock *b1, LegoBlock *b2);
 
     // Checks if 2 Lego Blocks can merge (checks if colors are compatible)
     static bool can_merge(LegoBlock *block_1, LegoBlock *block_2);

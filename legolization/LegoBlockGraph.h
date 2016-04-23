@@ -7,6 +7,7 @@
 
 #include "LegoBlock.h"
 #include "LegoBlockUtils.h"
+#include "LegoStabilityUtil.h"
 #include <list>
 #include <unordered_map>
 #include <iostream>
@@ -75,6 +76,13 @@ public:
 
     void copy(LegoBlockGraph &graph);
     void remove_everything();
+
+    LegoBlockGraph shuffle(LegoBlock* w);
+
+    pair<int, LegoBlock*> stability_analysis();
+    void generate_stable_component();
+
+    void print_info();
 
 };
 

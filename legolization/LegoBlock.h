@@ -53,6 +53,8 @@ public:
     list<LegoBlock*> split();
 
     void print();
+
+    void print_info();
 };
 
 #endif //GRAPHICSPROJECT_LEGOBLOCK_H

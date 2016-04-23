@@ -35,7 +35,7 @@ bool LegoBlockUtils::are_adjacent(LegoBlock *b1, LegoBlock *b2) {
 }
 
 bool LegoBlockUtils::can_colors_merge(LegoBlock *b1, LegoBlock *b2) {
-    return (true || b1->ignore_color
+    return (b1->ignore_color
             || b2->ignore_color
             || (b1->r == b2->r && b1->g == b2->g && b1->b == b2->b));
 }
@@ -55,6 +55,50 @@ bool LegoBlockUtils::is_stacked_on(LegoBlock *b1, LegoBlock *b2) {
 
     return stacked_z && overlapping_x && overlapping_y;
 }
+
+int LegoBlockUtils::overlap(LegoBlock *b1, LegoBlock *b2) {
+    assert(is_stacked_on(b1, b2));
+    int overlapping_x = 0;
+    if (b1->x == b2->x) {
+        overlapping_x = min((short) b1->sx,(short) b2->sx);
+    } else if (b1->x > b2->x) {
+        overlapping_x = min((short)b1->sx, (short)(b2->x + b2->sx - b1->x));
+    } else {
+        overlapping_x = min((short)b2->sx, (short)(b1->x + b1->sx - b2->x));
+    }
+
+    int overlapping_y = 0;
+    if (b1->y == b2->y) {
+        overlapping_y = min((short)b1->sy, (short)b2->sy);
+    } else if (b1->x > b2->x) {
+        overlapping_y = min((short)b1->sy,  (short) (b2->y + b2->sy - b1->y));
+    } else {
+        overlapping_y = min((short)b2->sy, (short) (b1->y + b1->sy - b2->y));
+    }
+
+    return overlapping_x * overlapping_y;
+}
+
+list<pair<int, int> > LegoBlockUtils::overlaps(LegoBlock *b1, LegoBlock *b2) {
+    list<pair<int, int> > points;
+    for (int x = 0; x < b1->sx; x++) {
+        for (int y = 0; y < b1->sy; y++) {
+            int px = b1->x + x;
+            int py = b1->y + y;
+
+            if (px >= b2->x && px < b2->x + b2->sx) {
+                if (py >= b2->y && py < b2->y + b2->sy) {
+                    points.push_back(make_pair(x, y));
+                }
+            }
+        }
+    }
+
+    assert(overlap(b1, b2) == points.size());
+
+    return points;
+}
+
 
 short LegoBlockUtils::get_merge_color(LegoBlock *b1, LegoBlock *b2) {
     assert(can_colors_merge(b1, b2));
