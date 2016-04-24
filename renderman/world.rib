@@ -1,9 +1,10 @@
 Projection "perspective" "fov" 45 
-Display "renders/FILE.tif" "tiff" "rgba"
+Display "renders/renders/FILE.tif" "tiff" "rgba"
 Format 760 760 1
 
 FrameBegin 1
-Translate 10 -10 60
+Translate -10 -25 90
+Rotate -90 1 0 0
 Rotate ANGLE 0 1 0
 Rotate ANGLZ 0 0 1
 

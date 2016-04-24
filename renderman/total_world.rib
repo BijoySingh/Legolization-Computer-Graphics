@@ -3,9 +3,10 @@ Display "renders/FILE.tif" "tiff" "rgba"
 Format 760 760 1
 
 FrameBegin 1
-Translate 10 -10 60
-Rotate ANGLE 0 1 0
-Rotate ANGLZ 0 0 1
+Translate -10 -25 90
+Rotate ANGLEX 1 0 0
+Rotate ANGLEY 0 1 0
+Rotate ANGLEZ 0 0 1
 
 WorldBegin
 

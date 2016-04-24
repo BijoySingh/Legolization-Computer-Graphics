@@ -1,9 +1,9 @@
 Projection "perspective" "fov" 45 
-Display "renders/FILE.tif" "tiff" "rgba"
-Format 480 480 1
+Display "renders/layers/FILE.tif" "tiff" "rgba"
+Format 720 720 1
 
 FrameBegin 1
-Translate 0 0 60
+Translate -15 -15 45
 
 WorldBegin
     AttributeBegin
