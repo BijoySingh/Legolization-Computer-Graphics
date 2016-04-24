@@ -43,7 +43,7 @@ void LegoBlock::set_location(short x, short y, short z) {
 LegoBlock::LegoBlock(short x, short y, short z, short sx, short sy) {
     set_location(x, y, z);
     set_size(sx, sy);
-    set_color(25, 25, 25);
+    set_color(0, 0, 0);
     set_ignore_color();
 }
 
@@ -57,9 +57,10 @@ LegoBlock::LegoBlock(short x, short y, short z, short sx, short sy, short r, sho
 void LegoBlock::getTriangles(float *points) {
     // back
 
-    float sx = this->sx - 0.05;
-    float sy = this->sy - 0.05;
-    float sz = this->sz - 0.05;
+    float margin = 0.05;
+    float sx = this->sx - margin;
+    float sy = this->sy - margin;
+    float sz = this->sz - margin;
 
     short position = 0;
     points[position + 0] = x;
@@ -204,6 +205,7 @@ list<LegoBlock *> LegoBlock::split() {
     for (int i = 0; i < sx; i++) {
         for (int j = 0; j < sy; j++) {
             LegoBlock* block = new LegoBlock(x + i, y +  j, z, 1, 1, r, g, b);
+            block->ignore_color = ignore_color;
             children.push_back(block);
         }
     }
@@ -219,6 +221,10 @@ void LegoBlock::print() {
 void LegoBlock::print_info() {
     cout << "LegoBlock:: "
     << x << "," << y << "," << z << " position, "
-    << sx << "," << sy << "," << sz << " size " << endl;
-
+    << sx << "," << sy << "," << sz << " size, "
+    << r << "," << g << "," << b << " color, ";
+    if (ignore_color) {
+        cout << "ignore color";
+    }
+    cout << endl;
 }

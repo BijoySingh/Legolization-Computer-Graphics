@@ -37,7 +37,9 @@ bool LegoBlockUtils::are_adjacent(LegoBlock *b1, LegoBlock *b2) {
 bool LegoBlockUtils::can_colors_merge(LegoBlock *b1, LegoBlock *b2) {
     return (b1->ignore_color
             || b2->ignore_color
-            || (b1->r == b2->r && b1->g == b2->g && b1->b == b2->b));
+            || (b1->r == b2->r && b1->g == b2->g && b1->b == b2->b)
+            || ((rand() % SAMPLE_COUNT) / (SAMPLE_COUNT * 1.0) < MERGE_PROBABILITY)
+            );
 }
 
 bool LegoBlockUtils::are_connected(LegoBlock *b1, LegoBlock *b2) {
@@ -101,17 +103,17 @@ list<pair<int, int> > LegoBlockUtils::overlaps(LegoBlock *b1, LegoBlock *b2) {
 
 
 short LegoBlockUtils::get_merge_color(LegoBlock *b1, LegoBlock *b2) {
-    assert(can_colors_merge(b1, b2));
-
     if (b1->ignore_color && b2->ignore_color)
         return 0;
     else if (b1->ignore_color)
         return 2;
-    return 1;
+    else if (b2->ignore_color)
+        return 1;
+    else
+        return rand() % 2 + 1;
 }
 
 LegoBlock* LegoBlockUtils::merge(LegoBlock *b1, LegoBlock *b2) {
-    assert(can_merge(b1, b2));
     LegoBlock *b;
 
     if (b1->x == b2->x) {
@@ -131,6 +133,9 @@ LegoBlock* LegoBlockUtils::merge(LegoBlock *b1, LegoBlock *b2) {
         b->set_color(b1->r, b1->g, b1->b);
     } else if (merge_color == 2) {
         b->set_color(b2->r, b2->g, b2->b);
+    } else {
+        b->set_color(0, 0, 255);
+        b->set_ignore_color();
     }
 
     return b;

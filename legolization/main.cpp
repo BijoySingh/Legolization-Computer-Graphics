@@ -110,8 +110,8 @@ int main() {
 
     graph.merge_to_maximal();
     graph.generate_single_component_analysis();
-    graph.generate_stable_component();
+    // graph.generate_stable_component();
 
-    render_stuff(graph, sz, false, true, false);
+    render_stuff(graph, sz, true, false, false);
     assert(validate(graph));
 }

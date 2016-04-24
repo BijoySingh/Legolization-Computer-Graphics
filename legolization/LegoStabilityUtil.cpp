@@ -25,8 +25,6 @@ list< pair<LegoBlock*, list<Force> > > LegoStabilityUtil::getForces() {
                 friction.setDirection(0, 0, 1);
                 friction.setPosition(pr.first * LEGO_SQUARE + LEGO_KNOB / 2, pr.second * LEGO_SQUARE + LEGO_KNOB / 2, 1);
                 forces.push_back(friction);
-                forces.push_back(friction);
-                forces.push_back(friction);
 
                 Force normal(NORMAL_UNCONSTRAINED);
                 normal.setPosition(pr.first * LEGO_SQUARE + LEGO_KNOB / 2, pr.second * LEGO_SQUARE + LEGO_KNOB / 2, 1);
@@ -48,9 +46,6 @@ list< pair<LegoBlock*, list<Force> > > LegoStabilityUtil::getForces() {
                 friction.setDirection(0, 0, 1);
                 friction.setPosition(pr.first * LEGO_SQUARE + LEGO_KNOB / 2, pr.second * LEGO_SQUARE + LEGO_KNOB / 2, 0);
                 forces.push_back(friction);
-                forces.push_back(friction);
-                forces.push_back(friction);
-
 
                 Force normal(NORMAL_UNCONSTRAINED);
                 normal.setPosition(pr.first * LEGO_SQUARE + LEGO_KNOB / 2, pr.second * LEGO_SQUARE + LEGO_KNOB / 2, 0);
@@ -84,7 +79,6 @@ double maximization_function(const std::vector<double> &x, std::vector<double> &
             double diff = FRIC_T - x[index];
             min_diff = min(min_diff, diff);
         }
-
         index++;
     }
     return min_diff;
@@ -178,11 +172,8 @@ pair<int, LegoBlock *> LegoStabilityUtil::getStabilityAnalysis() {
 
     list<int> positions;
     list<LegoBlock*> blocks;
-    cout << "Setting up force constraints" << endl;
     for (auto kv : forces) {
         LegoBlock* block = kv.first;
-        cout << "Trying to add Block";
-        block->print_info();
 
         float weight_value = block->sx * block->sy * LEGO_WEIGHT * GRAVITY;
         Force weight(WEIGHT);
@@ -191,68 +182,32 @@ pair<int, LegoBlock *> LegoStabilityUtil::getStabilityAnalysis() {
         weight.setPosition(((int) (block->sx / 2)) * LEGO_SQUARE + LEGO_KNOB / 2,
                            ((int) (block->sy / 2)) * LEGO_SQUARE + LEGO_KNOB / 2, 0.5);
 
-        cout << "Calculated the weight force" << endl;
-
         int force_start = force_counter;
-        cout << "Force size " << kv.second.size() << endl;
-
-        for (Force f : kv.second) {
-            if (f.type == NORMAL) {
-                int* a = new int;
-                if (f.direction[0] == 1) {
-                    *a = force_counter * PARAMS;
-                    opt.add_inequality_constraint(positivity_constraint, a, 1e-2);
-                } else if (f.direction[1] == 1) {
-                    *a = force_counter * PARAMS + 1;
-                    opt.add_inequality_constraint(positivity_constraint, a, 1e-2);
-                } else if (f.direction[2] == 1) {
-                    *a = force_counter * PARAMS + 2;
-                    opt.add_inequality_constraint(positivity_constraint, a, 1e-2);
-                }
-            }
-
-            if (f.known_direction) {
-                if (f.direction[0] == 0) directions->push_back(force_counter * PARAMS + 3);
-                if (f.direction[1] == 0) directions->push_back(force_counter * PARAMS + 4);
-                if (f.direction[2] == 0) directions->push_back(force_counter * PARAMS + 5);
-            }
-
-            force_counter++;
-        }
-
-        cout << "Added the forces" << endl;
-
+        force_counter += kv.second.size();
 
         ForceConstraint* constraint = new ForceConstraint(weight, force_start, force_counter);
         LegoForceConstraintData* force_constraint = new LegoForceConstraintData();
         force_constraint->constraint = constraint;
         force_constraint->force = &allForces;
 
-        cout << "Adding Translational eqbm" << endl;
         opt.add_equality_constraint(trans_eqbm_constraint, force_constraint, 1e-2);
-
-        cout << "Adding Rotational eqbm" << endl;
         opt.add_equality_constraint(rot_eqbm_constraint, force_constraint, 1e-2);
 
         blocks.push_back(block);
         positions.push_back(force_counter);
-
-        cout << "Adding Block Constraints" << endl;
     }
 
-    // cout << "Setting up direction constraints" << endl;
-    // opt.add_equality_constraint(direction_constraint, directions, 1e-2);
-
-    cout << "Setting up Objective" << endl;
     LegoForceConstraintData* force_constraint = new LegoForceConstraintData();
     force_constraint->force = &allForces;
+    opt.set_lower_bounds(-1);
+    opt.set_upper_bounds(1);
     opt.set_max_objective(maximization_function, force_constraint);
 
     cout << "Optimizing constraints" << endl;
     vector<double> x(optimizer_dimension);
     double maxValue;
     nlopt::result result = opt.optimize(x, maxValue);
-
+    cout << "Optimized Constraints" << endl;
 
     // Find which block has this lowest threshold
     double lowest_diff = 1000000000;

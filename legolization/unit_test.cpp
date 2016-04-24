@@ -14,17 +14,27 @@ void setToSphere(short ***image, short sx, short sy, short sz, short max_value, 
                 float value = (i - (sx / 2)) * (i - (sx / 2)) + (j - (sy / 2)) * (j - (sy / 2)) +
                               (k - (sz / 2)) * (k - (sz / 2));
                 value = sqrt(value);
+                float radius = value;
                 value = max_value * (value / r);
 
-                if (value > max_value)
+                if (radius > r || radius < r - 3)
                     image[i][j][k] = -2;
-                else if (value <= 3 * max_value / 4)
+                else if (radius < r - 1)
                     image[i][j][k] = -1;
                 else
                     image[i][j][k] = (short) value;
             }
         }
     }
+
+    /*
+     *  if (value > max_value || value < 2 * max_value / 3)
+     *      image[i][j][k] = -2;
+     *  else if (value <= 5 * max_value / 6)
+     *      image[i][j][k] = -1;
+     *  else
+     *      image[i][j][k] = (short) value;
+     */
 }
 
 void setValue(short ***image, short sx, short sy, short sz, short value) {
@@ -38,7 +48,7 @@ void setValue(short ***image, short sx, short sy, short sz, short value) {
 }
 
 short ***getImageMatrix(short sx, short sy, short sz) {
-    srand(time(NULL));
+    // srand(time(NULL));
     short ***image = new short **[(int) sx];
     for (int i = 0; i < sx; i++) {
         image[i] = new short *[(int) sy];
@@ -81,16 +91,17 @@ void render_stuff(LegoBlockGraph &graph, short sz) {
 }
 
 int main() {
-    short size = 20;
+    short size = 30;
     short sx = size, sy = size, sz = size, max_value = 255;
     short ***r = getImageMatrix(sx, sy, sz);
     short ***g = getImageMatrix(sx, sy, sz);
 
-    setToSphere(r, sx, sy, sz, max_value, 8);
+    setToSphere(r, sx, sy, sz, max_value, 14);
     setValue(g, sx, sy, sz, 0);
 
     LegoBlockGraph graph;
     graph.add_blocks(r, g, g, sx , sy , sz);
+
     graph.merge_to_maximal();
     graph.generate_single_component_analysis();
 

@@ -87,8 +87,6 @@ void LegoBlockGraph::add_blocks(short ***r, short ***g, short ***b, short sx, sh
                 } else if (r[i][j][k] >= 0) {
                     add_block(new LegoBlock(i, j, k, 1, 1, r[i][j][k], g[i][j][k], b[i][j][k]));
                 }
-
-                // cout << " Block Added " << i << ", " << j << ", " << k << endl;
             }
         }
     }
@@ -183,9 +181,9 @@ void LegoBlockGraph::prman_render_blocks(ostream &out, short filter_z, bool use_
         if (use_real_colors) {
             getColor(block->sx, block->sy, colors);
         } else if (block->ignore_color) {
-            colors[0] = 128;
-            colors[1] = 128;
-            colors[2] = 128;
+            colors[0] = 125;
+            colors[1] = 125;
+            colors[2] = 125;
         } else {
             colors[0] = block->r;
             colors[1] = block->g;
@@ -284,6 +282,7 @@ void LegoBlockGraph::merge_to_maximal() {
 void LegoBlockGraph::replicate(LegoBlock* reference, LegoBlock* &duplicate, LegoBlockGraph &lego_graph) {
     for (LegoBlock* block : blocks) {
         LegoBlock *b = new LegoBlock(block->x, block->y, block->z, block->sx, block->sy, block->r, block->g, block->b);
+        b->ignore_color = block->ignore_color;
         lego_graph.add_block(b);
 
         if (block == reference) {
@@ -366,7 +365,6 @@ void LegoBlockGraph::generate_single_component_analysis() {
             replicated.remove_everything();
             f++;
         }
-
     }
 }
 
@@ -485,6 +483,7 @@ pair<int, LegoBlock*> LegoBlockGraph::component_analysis() {
         for (LegoBlock* neighbour : neighbours) {
             components.insert(visited[neighbour]);
         }
+
         block->w = components.size() - 1;
         sum += components.size() - 1;
 

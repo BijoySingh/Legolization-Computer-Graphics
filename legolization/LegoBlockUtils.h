@@ -8,7 +8,11 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <ctime>
+#include <cstdlib>
 #include "LegoBlock.h"
+#define MERGE_PROBABILITY 1
+#define SAMPLE_COUNT 1000
 
 using namespace std;
 
