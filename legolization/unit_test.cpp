@@ -74,7 +74,6 @@ void render_stuff(LegoBlockGraph &graph, short sz) {
     fout.close();
 
     string cmd;
-
     for (int i = 0; i < sz; i++) {
         fout.open("../renderman/layer.rib");
         graph.prman_render_blocks(fout, i, false);
@@ -84,6 +83,22 @@ void render_stuff(LegoBlockGraph &graph, short sz) {
         system(cmd_car);
         fout.close();
     }
+
+    int count = 0;
+    for (int ax = -180; ax < 180; ax+=60) {
+            for (int az = -30; az <= 30; az+=10) {
+                cmd = "cd ../renderman; make individual AX=" + to_string(ax)
+                      + " AY=0"
+                      + " AZ=" + to_string(az)
+                      + " FILENAME=" + to_string(count);
+                const char *cmd_car = cmd.c_str();
+                system(cmd_car);
+                cout << cmd << endl;
+                count++;
+            }
+
+    }
+
     cmd = "cd ../renderman; make";
     const char *cmd_car = cmd.c_str();
     cout << cmd << endl;
@@ -100,7 +115,7 @@ int main() {
     setValue(g, sx, sy, sz, 0);
 
     LegoBlockGraph graph;
-    graph.add_blocks(r, g, g, sx , sy , sz);
+    graph.add_blocks(r, g, g, sx, sy, sz);
 
     graph.merge_to_maximal();
     graph.generate_single_component_analysis();

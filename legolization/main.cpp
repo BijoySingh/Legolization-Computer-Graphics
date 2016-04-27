@@ -20,14 +20,25 @@ void render_stuff(LegoBlockGraph &graph, short sz, bool print_layers = false,
 
     string cmd;
     if (single_only) {
+        const char *cmd_car = cmd.c_str();
         cmd = "cd ../renderman; make single";
+        system(cmd_car);
     } else {
-        cmd = "cd ../renderman; make";
+        int count = 0;
+        for (int ax = -180; ax < 180; ax+=60) {
+            for (int az = -30; az <= 30; az+=10) {
+                    cmd = "cd ../renderman; make individual AX=" + to_string(ax)
+                          + " AY=" + to_string(0)
+                          + " AZ=" + to_string(az)
+                          + " FILENAME=" + to_string(count);
+                    const char *cmd_car = cmd.c_str();
+                    system(cmd_car);
+
+                    count++;
+            }
+        }
     }
 
-    const char *cmd_car = cmd.c_str();
-    cout << cmd << endl;
-    system(cmd_car);
 
     if (print_layers) {
         for (int i = 0; i < sz; i++) {
