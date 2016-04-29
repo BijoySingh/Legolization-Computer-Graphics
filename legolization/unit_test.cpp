@@ -84,7 +84,7 @@ void render_stuff(LegoBlockGraph &graph, short sz) {
         fout.close();
     }
 
-    int count = 0;
+    /*int count = 0;
     for (int ax = -180; ax < 180; ax+=60) {
             for (int az = -30; az <= 30; az+=10) {
                 cmd = "cd ../renderman; make individual AX=" + to_string(ax)
@@ -97,7 +97,7 @@ void render_stuff(LegoBlockGraph &graph, short sz) {
                 count++;
             }
 
-    }
+    }*/
 
     cmd = "cd ../renderman; make";
     const char *cmd_car = cmd.c_str();

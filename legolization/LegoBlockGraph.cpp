@@ -442,7 +442,7 @@ pair<int, LegoBlock*> LegoBlockGraph::component_analysis() {
         visited[block] = -1;
     }
 
-    int A = 0;
+    int A = 0;  // number of single connected component
     for (LegoBlock *bi : blocks) {
         if (visited[bi] != -1) {
             continue;
