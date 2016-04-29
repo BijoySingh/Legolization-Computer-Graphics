@@ -24,6 +24,16 @@ single:
 	@rm -f aworld.rib
 	@rm -f tworld.rib
 
+individual:
+	@sed 's/ANGLEX/$(AX)/g' total_world.rib > tworld.rib
+	@sed 's/ANGLEY/$(AY)/g' tworld.rib > aworld.rib
+	@sed 's/ANGLEZ/$(AZ)/g' aworld.rib > tworld.rib
+	@sed 's/FILE/renders\/render_$(FILENAME)/g'  tworld.rib > aworld.rib
+	@prman aworld.rib
+	@rm -f aworld.rib
+	@rm -f tworld.rib
+
+
 multiple:
 	@sed 's/ANGLE/-25/g' world.rib > tworld.rib
 	@sed 's/ANGLZ/-25/g' tworld.rib > aworld.rib
